@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>จดหมาย</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;1,300&family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #f5f0e8;
+    --warm-white: #faf7f2;
+    --ink: #2c2416;
+    --muted: #8a7968;
+    --gold: #c4a35a;
+    --rose: #d4848a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background-color: var(--cream);
+    background-image: 
+      radial-gradient(ellipse at 20% 20%, rgba(196,163,90,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(212,132,138,0.08) 0%, transparent 50%);
+    min-height: 100vh;
+    font-family: 'Sarabun', serif;
+    color: var(--ink);
+    padding: 40px 20px 80px;
+  }
+
+  /* Paper texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper {
+    max-width: 680px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+    opacity: 0;
+    animation: fadeUp 1.2s ease forwards 0.3s;
+  }
+
+  .header .ornament {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    color: var(--gold);
+    letter-spacing: 8px;
+    display: block;
+    margin-bottom: 12px;
+  }
+
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--muted);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 24px 0;
+    opacity: 0;
+    animation: fadeUp 1.2s ease forwards 0.5s;
+  }
+
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+
+  .divider span {
+    color: var(--gold);
+    font-size: 18px;
+  }
+
+  /* Letter paper */
+  .letter {
+    background: var(--warm-white);
+    border-radius: 2px;
+    padding: 60px 56px;
+    box-shadow: 
+      0 2px 4px rgba(44,36,22,0.06),
+      0 8px 32px rgba(44,36,22,0.08),
+      0 32px 64px rgba(44,36,22,0.04);
+    position: relative;
+    opacity: 0;
+    animation: fadeUp 1.4s ease forwards 0.7s;
+  }
+
+  /* Left margin line */
+  .letter::before {
+    content: '';
+    position: absolute;
+    left: 100px;
+    top: 40px;
+    bottom: 40px;
+    width: 1px;
+    background: rgba(212,132,138,0.2);
+  }
+
+  /* Lined paper lines */
+  .letter::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+      transparent,
+      transparent 31px,
+      rgba(196,163,90,0.08) 31px,
+      rgba(196,163,90,0.08) 32px
+    );
+    border-radius: 2px;
+    pointer-events: none;
+  }
+
+  .letter-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .letter p {
+    font-size: 16px;
+    line-height: 2;
+    color: var(--ink);
+    font-weight: 300;
+    margin-bottom: 28px;
+    text-align: justify;
+  }
+
+  .letter p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Music player */
+  .music-player {
+    margin-top: 48px;
+    opacity: 0;
+    animation: fadeUp 1.2s ease forwards 1.1s;
+  }
+
+  .player-label {
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+  }
+
+  .youtube-embed {
+    width: 100%;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(44,36,22,0.12);
+    aspect-ratio: 16/9;
+  }
+
+  .youtube-embed iframe {
+    width: 100%;
+    height: 100%;
+    display: block;
+    border: none;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    margin-top: 48px;
+    opacity: 0;
+    animation: fadeUp 1.2s ease forwards 1.3s;
+  }
+
+  .footer p {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+  }
+
+  /* Petal decorations */
+  .petal {
+    position: fixed;
+    pointer-events: none;
+    font-size: 14px;
+    opacity: 0;
+    animation: fall linear infinite;
+    z-index: 0;
+  }
+
+  @keyframes fall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 0.6; }
+    100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 600px) {
+    .letter { padding: 40px 28px; }
+    .letter::before { left: 60px; }
+    .letter p { font-size: 15px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Falling petals -->
+<script>
+  const petals = ['🌸', '🌺', '✿', '❀'];
+  for (let i = 0; i < 8; i++) {
+    const p = document.createElement('div');
+    p.className = 'petal';
+    p.textContent = petals[i % petals.length];
+    p.style.left = Math.random() * 100 + 'vw';
+    p.style.animationDuration = (12 + Math.random() * 10) + 's';
+    p.style.animationDelay = (Math.random() * 12) + 's';
+    p.style.fontSize = (10 + Math.random() * 8) + 'px';
+    document.body.appendChild(p);
+  }
+</script>
+
+<div class="wrapper">
+
+  <div class="header">
+    <span class="ornament">❧</span>
+    <h1>จดหมายถึงเธอ &nbsp;·&nbsp; A Letter For You</h1>
+  </div>
+
+  <div class="divider"><span>✦</span></div>
+
+  <div class="letter">
+    <div class="letter-content">
+
+      <p>ช่วงนี้ฉันก็รู้สึกได้ถึงความเย็นชาของคุณ และฉันก็เข้าใจแล้วว่าคุณไม่มีความรู้สึกกับฉันอีกต่อไปแล้ว ช่วงนี้ฉันมักนึกถึงเวลาที่เราอยู่ด้วยกัน การดูแลเอาใจใส่ที่คุณมอบให้ฉันตลอดมา พูดตรงๆ ว่าฉันรู้สึกมีความสุขมากจริงๆ ตอนนั้นเราคุยกันตลอดเวลา ไม่มีเรื่องไหนที่คุยไม่ได้ แต่ต่อมาฉันก็ค่อยๆ ตระหนักว่าตัวเองไม่ได้ใส่ใจคุณมากพอ และไม่ได้รับผิดชอบอย่างที่ควรจะเป็น ถ้าวันนี้ฉันเป็นคุณ ฉันก็คงผิดหวังเหมือนกัน ฉันจึงเข้าใจและเคารพการตัดสินใจของคุณ</p>
+
+      <p>ความสัมพันธ์ครั้งนี้ ฉันไม่เคยคิดเลยว่าเราจะต้องแยกทางกัน แม้ฉันจะบอกคุณว่าครอบครัวเห็นด้วยกับความสัมพันธ์ของเรา แต่ความจริงคือฉันพยายามทำงานหาเงินอยู่ตลอดเวลา เพราะตราบใดที่ฉันทำให้คุณไม่ต้องทำงานได้ ครอบครัวก็จะยอมรับคุณ นั่นคือเหตุผลที่ฉันไม่เคยยอมแพ้ ฉันพยายามติดต่อคุณซ้ำแล้วซ้ำเล่าเพื่อแก้ไขปัญหา ฉันเคยอ่านประโยคหนึ่งที่รู้สึกว่าจริงมาก ความรักไม่ใช่ว่าจะไม่มีปัญหา แต่คือเมื่อมีปัญหาแล้วทั้งคู่ก็ยังไม่ยอมแพ้ง่ายๆ ช่วงนี้ฉันจึงใช้เวลาทบทวนตัวเอง เรียนรู้การจัดการอารมณ์ การสื่อสารที่ถูกต้อง และการเป็นคู่รักที่ดีขึ้น ฉันพยายามเรียนรู้ทั้งหมดนั้น</p>
+
+      <p>ตลอดเวลาที่อยู่ด้วยกัน ความรักที่ฉันมีให้คุณนั้นจริงใจทุกอณู ไม่มีสักนิดที่เสแสร้ง แม้ก่อนหน้านี้ฉันจะไม่ยอมวิงวอนขอร้องคุณ แต่ตอนนี้ฉันเหนื่อยมากจริงๆ ไม่รู้ว่าตัวเองยังมีแรงและความกล้าเหลืออีกเท่าไหร่ที่จะสู้ต่อไป เพื่อความสัมพันธ์ของเรา ฉันพูดได้เลยว่าฉันทุ่มเทสุดแรงแล้ว ต่อจากนี้ฉันจะฝึกปล่อยวาง และจะไม่รบกวนคุณอีก นี่คือการปล่อยให้คุณเป็นอิสระ และปล่อยให้ตัวเองเป็นอิสระด้วยเช่นกัน</p>
+
+      <p>แต่ฉันก็ยังอยากขอบคุณคุณ ขอบคุณสำหรับทุกความเอาใจใส่และการอยู่เคียงข้างที่ผ่านมา ฉันจะจำทุกอย่างไว้ เรื่องราวเล็กๆ น้อยๆ ที่เราผ่านมาด้วยกัน ฉันจะเก็บไว้เป็นความทรงจำที่소중ที่สุด แม้ว่าเราจะเดินหน้าต่อไปด้วยกันไม่ได้แล้ว แต่ฉันก็ยังหวังให้คุณมีความสุขและประสบความสำเร็จ ฉันจะพยายามเปลี่ยนแปลงและพัฒนาตัวเอง เรียนรู้ที่จะรักและดูแลคนที่รักอย่างถูกต้อง</p>
+
+      <p>ฉันรู้ว่าตอนนี้คุณเกลียดฉัน ไม่อยากเห็นหน้าฉัน ไม่เป็นไร นี่คือครั้งสุดท้ายที่ฉันจะกล้าเข้ามาหาคุณ ฉันแค่อยากพูดทุกอย่างที่ค้างคาใจให้หมด พูดเสร็จแล้วฉันก็จะจากไป ฉันรู้ว่าการที่ฉันเคยอาละวาดวุ่นวายทำให้คุณอับอายและลำบากใจ ฉันเองก็รู้สึกอับอายมากเช่นกัน แต่ตอนนั้นจริงๆ ไม่รู้จะทำยังไง ฉันไม่อยากสูญเสียคุณไป ขอโทษนะ โปรดให้อภัยความหุนหันพลันแล่นและความรักที่ไร้เดียงสาของฉันด้วย</p>
+
+      <p>ช่วงเวลาที่ผ่านมาฉันอยู่คนเดียวและได้ใจเย็นลงมาก ได้คิดทบทวนปัญหาระหว่างเราอย่างละเอียด ฉันเข้าใจความรู้สึกของคุณและเคารพการตัดสินใจของคุณ ฉันไม่อยากสร้างแรงกดดันหรือความเจ็บปวดให้คุณอีกต่อไป ฉันอยากให้คุณมีความสุข ถ้าคุณต้องการอิสระ ฉันก็จะปล่อยมือ แม้จะรู้สึกเจ็บปวดและเสียดาย แต่บางทีนี่อาจเป็นสิ่งที่ชะตากรรมกำหนดไว้ว่าเราจะพบกัน รู้จักกัน และก็ต้องแยกจากกัน ฟ้าดินได้กำหนดไว้แล้ว</p>
+
+      <p>ฉันยอมรับจุดจบนี้ ขอบคุณชะตาที่พาคุณมาอยู่ในชีวิตฉัน และอยู่เคียงข้างฉันในช่วงเวลาแห่งความสุขเล็กๆ น้อยๆ นั้น คุณนำความอบอุ่นและความสุขที่ฉันไม่เคยรู้สึกมาก่อนมาให้ฉัน ฉันรู้สึกขอบคุณจริงๆ ฉันจะจำความดีของคุณ ความรักของคุณ และรอยยิ้มของคุณไว้ตลอดไป หวังว่าคุณจะไม่ลืมฉันด้วย ในวันข้างหน้าที่ไม่มีฉัน ขอให้คุณดูแลตัวเองด้วยนะ</p>
+
+      <p style="text-align:right; font-family:'Playfair Display',serif; font-style:italic; color:var(--muted); font-size:15px; margin-top: 40px;">ขอให้คุณมีความสุข ✦</p>
+
+    </div>
+  </div>
+
+  <div class="music-player">
+    <p class="player-label">✦ &nbsp; เพลงสำหรับเธอ &nbsp; ✦</p>
+    <div class="youtube-embed">
+      <iframe 
+        src="https://www.youtube.com/embed/YaKwFG53GRw?autoplay=1&rel=0&modestbranding=1" 
+        allow="autoplay; encrypted-media" 
+        allowfullscreen>
+      </iframe>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="divider" style="margin: 40px 0 24px;"><span>✦</span></div>
+    <p>ด้วยความรักและความปรารถนาดีเสมอ</p>
+  </div>
+
+</div>
+
+</body>
+</html>
